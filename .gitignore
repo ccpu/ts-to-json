@@ -8,11 +8,3 @@ node_modules/
 # local config for auto
 .env
 
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-!tsup.config.ts

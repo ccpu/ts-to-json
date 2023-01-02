@@ -1,4 +1,4 @@
-import { program } from "commander";
+import * as commander from "commander";
 import { writeFile } from "fs";
 // import * as stringify from "json-stable-stringify";
 import { createGenerator } from "./factory/generator";
@@ -6,7 +6,7 @@ import { Config, DEFAULT_CONFIG } from "./src/Config";
 import { BaseError } from "./src/Error/BaseError";
 import { formatError } from "./src/Utils/formatError";
 
-program
+const args = commander
     .option("-p, --path <path>", "Source file path")
     .option("-t, --type <name>", "Type name")
     .option("-f, --tsconfig <path>", "Custom tsconfig.json path")
@@ -27,30 +27,28 @@ program
 
     .parse(process.argv);
 
-const options = program.opts();
-
 const config: Config = {
     ...DEFAULT_CONFIG,
-    path: options.path,
-    tsconfig: options.tsconfig,
-    type: options.type,
-    expose: options.expose,
-    topRef: options.topRef,
-    jsDoc: options.jsDoc,
-    sortProps: !options.unstable,
-    strictTuples: options.strictTuples,
-    skipTypeCheck: !options.typeCheck,
-    encodeRefs: options.refEncode,
-    extraTags: options.validationKeywords,
+    path: args.path,
+    tsconfig: args.tsconfig,
+    type: args.type,
+    expose: args.expose,
+    topRef: args.topRef,
+    jsDoc: args.jsDoc,
+    sortProps: !args.unstable,
+    strictTuples: args.strictTuples,
+    skipTypeCheck: !args.typeCheck,
+    encodeRefs: args.refEncode,
+    extraTags: args.validationKeywords,
 };
 
 try {
-    const schema = createGenerator(config).createSchema(options.type);
+    const schema = createGenerator(config).createSchema(args.type);
     const schemaString = JSON.stringify(schema, null, 2);
 
-    if (options.out) {
+    if (args.out) {
         // write to file
-        writeFile(options.out, schemaString, (err) => {
+        writeFile(args.out, schemaString, (err) => {
             if (err) throw err;
         });
     } else {
