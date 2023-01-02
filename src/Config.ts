@@ -3,7 +3,6 @@ import ts from "typescript";
 export interface Config {
     path?: string;
     type?: string;
-    minify?: boolean;
     schemaId?: string;
     tsconfig?: string;
     expose?: "all" | "none" | "export";
@@ -101,7 +100,6 @@ export const DEFAULT_CONFIG: Config = {
     strictTuples: false,
     skipTypeCheck: false,
     encodeRefs: true,
-    minify: false,
     extraTags: [],
     showUnknownTypeInfo: true,
     additionalProperties: false,

@@ -25,10 +25,9 @@
       "node_modules/@types"
     ],
     "outDir": "dist",
-    "incremental": true
   },
   "files": [
-    "ts-json-schema-generator.ts",
+    "ts-to-json.ts",
     "index.ts"
   ],
   "include": [

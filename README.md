@@ -7,6 +7,7 @@ Inspired by [`YousefED/typescript-json-schema`](https://github.com/YousefED/type
 -   this implementation avoids the use of `typeChecker.getTypeAtLocation()` (so probably it keeps correct type aliases)
 -   processing AST and formatting JSON schema have been split into two independent steps
 -   not exported types, interfaces, enums are not exposed in the `definitions` section in the JSON schema
+-   minified bundle for cjs and esm projects
 
 ## Contributors
 
@@ -16,7 +17,10 @@ This project is made possible by a [community of contributors](https://github.co
 
 ```bash
 npm install --save ts-to-json
-./node_modules/.bin/ts-to-json --path 'my/project/**.*.ts' --type 'My.Type.Full.Name'
+npm ts-to-json --path 'my/project/**.*.ts' --type 'My.Type.Full.Name'
+
+yarn add ts-to-json
+yarn ts-to-json --path 'my/project/**.*.ts' --type 'My.Type.Full.Name'
 ```
 
 ## Programmatic Usage
