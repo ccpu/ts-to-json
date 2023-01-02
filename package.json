@@ -3,23 +3,14 @@
   "version": "1.7.0",
   "description": "Generate JSON schema from your Typescript sources",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+  "bin": {
+    "ts-to-json": "./bin/ts-to-json"
   },
-  "bin": "./dist/ts-to-json",
   "author": {
     "name": "Alexander Evtushenko",
     "email": "aevtushenko@xiag.ch"
   },
-  "files": [
-    "dist"
-  ],
   "contributors": [
     {
       "name": "Dominik Moritz",
@@ -43,20 +34,27 @@
     "jsonschema"
   ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=10.0.0"
   },
   "dependencies": {
+    "@types/json-schema": "^7.0.9",
+    "commander": "^9.0.0",
+    "glob": "^7.2.0",
+    "is-mergeable-object": "^1.1.1",
+    "json5": "^2.2.0",
+    "safe-stable-stringify": "^2.3.1",
+    "sortobject": "^4.16.0",
     "typescript": "~4.6.2"
   },
   "devDependencies": {
     "@auto-it/conventional-commits": "^10.32.5",
     "@auto-it/first-time-contributor": "^10.32.5",
-    "@swc/core": "^1.3.24",
-    "@swc/jest": "^0.2.24",
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-typescript": "^7.16.7",
     "@types/animejs": "3.1.0",
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.4.0",
-    "@types/json-schema": "^7.0.9",
     "@types/node": "^17.0.8",
     "@types/react": "^18.0.8",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
@@ -65,36 +63,30 @@
     "ajv-formats": "^2.1.1",
     "auto": "^10.32.5",
     "chai": "^4.3.4",
-    "commander": "^9.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "glob": "^7.2.0",
-    "is-mergeable-object": "^1.1.1",
     "jest": "^27.4.7",
     "jest-junit": "^13.0.0",
-    "json5": "^2.2.0",
     "prettier": "^2.5.1",
-    "safe-stable-stringify": "^2.3.1",
-    "sortobject": "^4.16.0",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.4.0",
-    "tsup": "^6.5.0",
     "vega": "^5.21.0",
     "vega-lite": "^5.2.0"
   },
   "scripts": {
     "prepublishOnly": "yarn build",
-    "build": "tsup",
+    "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint \"{src,test,factory}/**/*.ts\"",
     "format": "yarn lint --fix",
-    "test": "jest test --verbose",
+    "test": "jest test/ --verbose",
     "test:fast": "cross-env FAST_TEST=1 jest test/ --verbose",
     "test:coverage": "yarn jest test/ --collectCoverage=true",
     "test:update": "cross-env UPDATE_SCHEMA=true yarn test:fast",
+    "debug": "node -r ts-node/register --inspect-brk ts-json-schema-generator.ts",
+    "run": "ts-node-transpile-only ts-json-schema-generator.ts",
     "release": "yarn build && auto shipit"
-  },
-  "packageManager": "yarn@3.3.1"
+  }
 }

@@ -6,6 +6,6 @@ module.exports = {
     collectCoverage: false,
     testEnvironment: "node",
     transform: {
-        ".*": "@swc/jest",
+        ".*": "babel-jest",
     },
 };

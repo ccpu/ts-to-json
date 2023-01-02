@@ -1,20 +1,19 @@
 name: Build
-on: [push, pull_request]
+on: push
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14, 16, 18]
+        node-version: [10, 12]
       fail-fast: true
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --immutable
-      - run: yarn build
+      - run: yarn install --ignore-engines --frozen-lockfile
       - run: yarn test
         env:
           FAST_TEST: 1
