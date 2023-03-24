@@ -29,10 +29,9 @@ export class TypeReferenceNodeParser implements SubNodeParser {
     public createType(node: ts.TypeReferenceNode, context: Context): BaseType | undefined {
         const typeSymbol = this.typeChecker.getSymbolAtLocation(node.typeName)!;
 
-        if (!typeSymbol || typeSymbol.name === "unknown") {
+        if (typeSymbol.name === "unknown") {
             if (this.config.handleUnknownTypes)
                 return new UnknownSymbolType(node, typeSymbol, this.config.allowArbitraryDataTypes);
-            throw new UnknownTypeReference(node, `are you using global types?`);
         }
 
         if (typeSymbol.flags & ts.SymbolFlags.Alias) {

@@ -4,6 +4,7 @@ import { ExtendedAnnotationsReader } from "../src/AnnotationsReader/ExtendedAnno
 import { ChainNodeParser } from "../src/ChainNodeParser";
 import { CircularReferenceNodeParser } from "../src/CircularReferenceNodeParser";
 import { Config, DEFAULT_CONFIG } from "../src/Config";
+import { UnknownSymbolLocation } from "../src/Error/UnknownSymbolLocation";
 import { ExposeNodeParser } from "../src/ExposeNodeParser";
 import { MutableParser } from "../src/MutableParser";
 import { NodeParser } from "../src/NodeParser";
@@ -65,6 +66,17 @@ export type ParserAugmentor = (parser: MutableParser) => void;
 
 export function createParser(program: ts.Program, config: Config, augmentor?: ParserAugmentor): NodeParser {
     const typeChecker = program.getTypeChecker();
+
+    const getSymbolAtLocation = typeChecker.getSymbolAtLocation;
+
+    typeChecker.getSymbolAtLocation = (node: ts.Node) => {
+        const symbol = getSymbolAtLocation(node);
+        if (!symbol) {
+            throw new UnknownSymbolLocation(node);
+        }
+        return symbol;
+    };
+
     const chainNodeParser = new ChainNodeParser(typeChecker, [], config);
 
     const mergedConfig = { ...DEFAULT_CONFIG, ...config };
