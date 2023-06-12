@@ -92,6 +92,8 @@ export interface Config {
         If set to true types like any,unknown,HTMLElement ... will be set
     */
     allowArbitraryDataTypes?: boolean;
+
+    invalidIndexHandlingMode?: "throw" | "warn" | "suppress";
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -106,4 +108,5 @@ export const DEFAULT_CONFIG: Config = {
     extraTags: [],
     additionalProperties: false,
     discriminatorType: "json-schema",
+    invalidIndexHandlingMode: "throw",
 };

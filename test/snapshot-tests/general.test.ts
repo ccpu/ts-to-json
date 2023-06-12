@@ -2,14 +2,11 @@ import { assertSchema } from "./assertSchema";
 
 describe("createSchema", () => {
     it("with-promise-type", assertSchema("with-promise-type", { type: "MyObject" }));
-
     it("with-promise-type", assertSchema("string-literals-for-index signature", { type: "MyObject" }));
-
     it("generic-type-name", assertSchema("generic-type-name", { type: "MyObject" }));
     it("any-unknown", assertSchema("any-unknown", { type: "MyObject", allowArbitraryDataTypes: true }));
     it("typeof-keyof", assertSchema("typeof-keyof", { expose: "export" }));
     it("function-with-tag", assertSchema("function-with-tag", { jsDoc: "extended" }));
-
     it(
         "sort",
         assertSchema("sort", {
@@ -34,7 +31,6 @@ describe("createSchema", () => {
     it("typescript-html-element-type", assertSchema("typescript-html-element-type"));
     it("extends-from-packages", assertSchema("extends-from-packages", { type: "MyProps", handleUnknownTypes: true }));
     it("circular-ref-union", assertSchema("circular-ref-union", { type: "MyType", expose: "all" }));
-
     it(
         "handle-unknown-type-in-npm-package",
         assertSchema("handle-unknown-type-in-npm-package", {
@@ -43,11 +39,9 @@ describe("createSchema", () => {
             handleUnknownTypes: true,
         })
     );
-
     it("skipFiles option", assertSchema("skipFiles", { type: "MyType", skipParseFiles: ["external-props.ts"] }));
     it("skipTypes option", assertSchema("skipTypes", { type: "MyType", skipParseTypes: ["ExternalProps"] }));
     it("skip-function-types", assertSchema("skip-function-types", { type: "MyObject", skipParseTypes: ["function"] }));
-
     it(
         "should parse type even if type is in skipParseFiles list",
         assertSchema("skipFiles-with-forceToParseTypes", {
@@ -64,7 +58,6 @@ describe("createSchema", () => {
             forceToParseTypes: ["ExternalProps"],
         })
     );
-
     it(
         "should not parse node when shouldParseNode return false",
         assertSchema("shouldParseNode-option", {
@@ -79,7 +72,6 @@ describe("createSchema", () => {
             },
         })
     );
-
     it(
         "should parse node even if shouldParseNode return false",
         assertSchema("shouldParseNode-option-force", {
@@ -95,4 +87,16 @@ describe("createSchema", () => {
             },
         })
     );
+    it(
+        "with-promise-type",
+        assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexHandlingMode: "suppress" })
+    );
+
+    it("should throw error with invalid index", () => {
+        expect(assertSchema("suppress-invalid-index-error", { type: "MyObject" })).toThrow();
+
+        expect(
+            assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexHandlingMode: "throw" })
+        ).toThrow();
+    });
 });

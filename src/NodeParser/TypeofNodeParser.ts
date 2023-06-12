@@ -92,7 +92,7 @@ export class TypeofNodeParser implements SubNodeParser {
                 } else if (type instanceof LiteralType && typeof type.getValue() === "number") {
                     type = new LiteralType(+type.getValue() + 1);
                 } else {
-                    throw new LogicError(`Enum initializer missing for "${name}"`);
+                    throw new LogicError(`Enum initializer missing for "${name}"`, node);
                 }
                 return new ObjectProperty(name, type, true);
             });

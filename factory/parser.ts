@@ -156,7 +156,7 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
 
         .addNodeParser(new TypeReferenceNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new ExpressionWithTypeArgumentsNodeParser(typeChecker, chainNodeParser, mergedConfig))
-        .addNodeParser(new IndexedAccessTypeNodeParser(typeChecker, chainNodeParser))
+        .addNodeParser(new IndexedAccessTypeNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new InferTypeNodeParser(typeChecker, chainNodeParser))
         .addNodeParser(new TypeofNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new MappedTypeNodeParser(chainNodeParser, mergedConfig.additionalProperties!, mergedConfig))

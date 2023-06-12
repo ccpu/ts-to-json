@@ -12,9 +12,16 @@ import { TupleType } from "../Type/TupleType";
 import { UnionType } from "../Type/UnionType";
 import { derefType } from "../Utils/derefType";
 import { getTypeByKey } from "../Utils/typeKeys";
+import { Config } from "../Config";
+import { UnknownType } from "../Type/UnknownType";
+import { getNodeInfo } from "../Error/utils";
 
 export class IndexedAccessTypeNodeParser implements SubNodeParser {
-    public constructor(protected typeChecker: ts.TypeChecker, protected childNodeParser: NodeParser) {}
+    public constructor(
+        protected typeChecker: ts.TypeChecker,
+        protected childNodeParser: NodeParser,
+        private config: Config
+    ) {}
 
     public supportsNode(node: ts.TypeNode): boolean {
         return node.kind === ts.SyntaxKind.IndexedAccessType;
@@ -64,7 +71,8 @@ export class IndexedAccessTypeNodeParser implements SubNodeParser {
         const propertyTypes = indexTypes.map((type) => {
             if (!(type instanceof LiteralType || type instanceof StringType || type instanceof NumberType)) {
                 throw new LogicError(
-                    `Unexpected type "${type.getId()}" (expected "LiteralType" or "StringType" or "NumberType")`
+                    `Unexpected type "${type.getId()}" (expected "LiteralType" or "StringType" or "NumberType")`,
+                    node
                 );
             }
 
@@ -76,9 +84,21 @@ export class IndexedAccessTypeNodeParser implements SubNodeParser {
                     if (objectType instanceof ReferenceType) {
                         return objectType;
                     }
-                    throw new LogicError(`Invalid index "${type.getValue()}" in type "${objectType.getId()}"`);
+                    if (this.config.invalidIndexHandlingMode === "throw") {
+                        throw new LogicError(
+                            `Invalid index "${type.getValue()}" in type "${objectType.getId()}"`,
+                            node
+                        );
+                    } else {
+                        if (this.config.invalidIndexHandlingMode === "warn") {
+                            console.warn(
+                                `Invalid index "${type.getValue()}" in type "${objectType.getId()}"` + getNodeInfo(node)
+                            );
+                        }
+                        return new UnknownType();
+                    }
                 } else {
-                    throw new LogicError(`No additional properties in type "${objectType.getId()}"`);
+                    throw new LogicError(`No additional properties in type "${objectType.getId()}"`, node);
                 }
             }
 

@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/MyObject",
+    "definitions": {
+        "MyObject": {
+            "$ref": "#/definitions/MyGeneric<structure-1732585107-132-145-1732585107-121-146-1732585107-97-147-1732585107-0-148>"
+        },
+        "MyGeneric<structure-1732585107-132-145-1732585107-121-146-1732585107-97-147-1732585107-0-148>": {
+            "type": "object",
+            "properties": {
+                "a": {},
+                "b": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "a",
+                "b"
+            ],
+            "additionalProperties": false
+        }
+    }
+}
