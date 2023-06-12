@@ -1,7 +1,7 @@
 import * as glob from "glob";
 import * as path from "path";
 import ts from "typescript";
-
+import normalize from "normalize-path";
 import { Config } from "../src/Config";
 import { DiagnosticError } from "../src/Error/DiagnosticError";
 import { LogicError } from "../src/Error/LogicError";
@@ -59,7 +59,8 @@ function getTsConfig(config: Config) {
 }
 
 export function createProgram(config: Config, oldProgram?: ts.Program): ts.Program {
-    const rootNamesFromPath = config.path ? glob.sync(path.resolve(config.path)) : [];
+    const rootNamesFromPath = config.path ? glob.sync(normalize(path.resolve(config.path))) : [];
+
     const tsconfig = getTsConfig(config);
     const rootNames = rootNamesFromPath.length ? rootNamesFromPath : tsconfig.fileNames;
 

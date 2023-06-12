@@ -28,7 +28,7 @@ export class RecursionTypeParser implements SubNodeParser {
         return false;
     }
 
-    public createType(node: ts.TypeReferenceNode, context: Context, reference?: ReferenceType): BaseType | undefined {
+    public createType(node: ts.TypeReferenceNode, context: Context, reference?: ReferenceType): BaseType {
         const parser = new TypeReferenceNodeParser(this.typeChecker, this.chainNodeParser, this.config);
         const type = parser.createType(node, new Context(node, context));
 

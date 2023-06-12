@@ -17,18 +17,22 @@ import { BooleanLiteralNodeParser } from "../src/NodeParser/BooleanLiteralNodePa
 import { BooleanTypeNodeParser } from "../src/NodeParser/BooleanTypeNodeParser";
 import { CallExpressionParser } from "../src/NodeParser/CallExpressionParser";
 import { ConditionalTypeNodeParser } from "../src/NodeParser/ConditionalTypeNodeParser";
+import { ConstructorNodeParser } from "../src/NodeParser/ConstructorNodeParser";
 import { EnumNodeParser } from "../src/NodeParser/EnumNodeParser";
 import { ExpressionWithTypeArgumentsNodeParser } from "../src/NodeParser/ExpressionWithTypeArgumentsNodeParser";
 import { FunctionNodeParser } from "../src/NodeParser/FunctionNodeParser";
+// import { FunctionParser } from "../src/NodeParser/FunctionParser";
 import { HiddenNodeParser } from "../src/NodeParser/HiddenTypeNodeParser";
 import { IndexedAccessTypeNodeParser } from "../src/NodeParser/IndexedAccessTypeNodeParser";
+import { InferTypeNodeParser } from "../src/NodeParser/InferTypeNodeParser";
 import { InterfaceAndClassNodeParser } from "../src/NodeParser/InterfaceAndClassNodeParser";
 import { IntersectionNodeParser } from "../src/NodeParser/IntersectionNodeParser";
 import { IntrinsicNodeParser } from "../src/NodeParser/IntrinsicNodeParser";
 import { LiteralNodeParser } from "../src/NodeParser/LiteralNodeParser";
 import { MappedTypeNodeParser } from "../src/NodeParser/MappedTypeNodeParser";
-import { NeverTypeNodeParser } from "../src/NodeParser/NeverTypeNodeParser";
 import { NotKnownNodeParser } from "../src/NodeParser/NotKnownNodeParser";
+import { NamedTupleMemberNodeParser } from "../src/NodeParser/NamedTupleMemberNodeParser";
+import { NeverTypeNodeParser } from "../src/NodeParser/NeverTypeNodeParser";
 import { NullLiteralNodeParser } from "../src/NodeParser/NullLiteralNodeParser";
 import { NumberLiteralNodeParser } from "../src/NodeParser/NumberLiteralNodeParser";
 import { NumberTypeNodeParser } from "../src/NodeParser/NumberTypeNodeParser";
@@ -105,6 +109,10 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
         augmentor(chainNodeParser);
     }
 
+    if (augmentor) {
+        augmentor(chainNodeParser);
+    }
+
     chainNodeParser
         // the following parser must stay at top
         .addNodeParser(new SkippedTypeParser(config))
@@ -132,6 +140,12 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
         .addNodeParser(new BooleanLiteralNodeParser())
         .addNodeParser(new NullLiteralNodeParser())
 
+        .addNodeParser(new ConstructorNodeParser())
+        .addNodeParser(new ObjectLiteralExpressionNodeParser(chainNodeParser))
+        .addNodeParser(new ArrayLiteralExpressionNodeParser(chainNodeParser))
+
+        .addNodeParser(new PrefixUnaryExpressionNodeParser(chainNodeParser))
+
         .addNodeParser(new ObjectLiteralExpressionNodeParser(chainNodeParser))
         .addNodeParser(new ArrayLiteralExpressionNodeParser(chainNodeParser))
 
@@ -142,16 +156,18 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
 
         .addNodeParser(new TypeReferenceNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new ExpressionWithTypeArgumentsNodeParser(typeChecker, chainNodeParser, mergedConfig))
-
-        .addNodeParser(new IndexedAccessTypeNodeParser(chainNodeParser))
+        .addNodeParser(new IndexedAccessTypeNodeParser(typeChecker, chainNodeParser))
+        .addNodeParser(new InferTypeNodeParser(typeChecker, chainNodeParser))
         .addNodeParser(new TypeofNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new MappedTypeNodeParser(chainNodeParser, mergedConfig.additionalProperties!, mergedConfig))
+
         .addNodeParser(new ConditionalTypeNodeParser(typeChecker, chainNodeParser))
         .addNodeParser(new TypeOperatorNodeParser(chainNodeParser))
 
         .addNodeParser(new UnionNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new IntersectionNodeParser(typeChecker, chainNodeParser))
         .addNodeParser(new TupleNodeParser(typeChecker, chainNodeParser))
+        .addNodeParser(new NamedTupleMemberNodeParser(chainNodeParser))
         .addNodeParser(new OptionalTypeNodeParser(chainNodeParser))
         .addNodeParser(new RestTypeNodeParser(chainNodeParser))
 
@@ -162,6 +178,7 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
             withCircular(withExpose(withJsDoc(new TypeAliasNodeParser(typeChecker, chainNodeParser, mergedConfig))))
         )
         .addNodeParser(withExpose(withJsDoc(new EnumNodeParser(typeChecker, mergedConfig))))
+
         .addNodeParser(
             withCircular(
                 withExpose(
@@ -181,6 +198,7 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
                 withExpose(
                     withJsDoc(
                         new TypeLiteralNodeParser(
+                            typeChecker,
                             withJsDoc(chainNodeParser),
                             mergedConfig.additionalProperties!,
                             mergedConfig

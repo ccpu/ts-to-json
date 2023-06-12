@@ -13,6 +13,7 @@ import { preserveAnnotation } from "../Utils/preserveAnnotation";
 import { removeUndefined } from "../Utils/removeUndefined";
 import { StringMap } from "../Utils/StringMap";
 import { uniqueArray } from "../Utils/uniqueArray";
+import { NeverType } from "../Type/NeverType";
 
 export class ObjectTypeFormatter implements SubTypeFormatter {
     public constructor(protected childTypeFormatter: TypeFormatter) {}
@@ -46,7 +47,8 @@ export class ObjectTypeFormatter implements SubTypeFormatter {
 
         const childrenOfProps = properties.reduce((result: BaseType[], property) => {
             const propertyType = property.getType();
-            if (propertyType === undefined) {
+
+            if (propertyType instanceof NeverType) {
                 return result;
             }
 
@@ -59,8 +61,14 @@ export class ObjectTypeFormatter implements SubTypeFormatter {
     }
 
     protected getObjectDefinition(type: ObjectType): Definition {
-        const objectProperties = type.getProperties();
+        let objectProperties = type.getProperties();
         const additionalProperties: BaseType | boolean = type.getAdditionalProperties();
+
+        if (additionalProperties === false) {
+            objectProperties = objectProperties.filter(
+                (property) => !(derefType(property.getType()) instanceof NeverType)
+            );
+        }
 
         const preparedProperties = objectProperties.map((property) => this.prepareObjectProperty(property));
 
@@ -83,6 +91,7 @@ export class ObjectTypeFormatter implements SubTypeFormatter {
         return {
             type: "object",
             ...(anyProps ? { properties } : {}),
+
             ...(Object.keys(properties).length > 0 ? { properties } : {}),
             ...(required.length > 0 ? { required } : {}),
             ...(additionalProperties === true ||

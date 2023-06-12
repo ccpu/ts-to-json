@@ -11,13 +11,23 @@
           "type": "number"
         },
         "requiredValue": {
-          "type": ["number", "string"]
+          "type": [
+            "number",
+            "string"
+          ]
         },
         "nullableValue": {
-          "type": ["number", "string", "null"]
+          "type": [
+            "number",
+            "string",
+            "null"
+          ]
         },
         "optionalValue": {
-          "type": ["number", "string"]
+          "type": [
+            "number",
+            "string"
+          ]
         },
         "privateString": {
           "type": "string"

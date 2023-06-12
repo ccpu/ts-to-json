@@ -7,11 +7,16 @@ export interface Annotations {
     [name: string]: any;
 }
 
-const getAnnotations = (data: Annotations, annotations: Annotations = {}): any => {
+const getAnnotations = (data: Annotations): any => {
     const annotation = data.annotations;
+
+    if (annotation && "discriminator" in annotation) {
+        return annotation;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     if (data.type && (data.type instanceof AnnotatedType || data.type instanceof AliasType)) {
-        const refAnnotations = getAnnotations(data.type, annotation);
+        const refAnnotations = getAnnotations(data.type);
 
         const mergedAnnotations = deepMerge(refAnnotations, annotation || {});
 

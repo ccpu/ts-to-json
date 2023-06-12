@@ -25,7 +25,6 @@ export * from "./modifiers";
 export * from "./narrowType";
 export * from "./node-name";
 export * from "./nodeKey";
-export * from "./notUndefined";
 export * from "./preserveAnnotation";
 export * from "./removeUndefined";
 export * from "./String";

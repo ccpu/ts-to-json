@@ -2,6 +2,7 @@ import ts from "typescript";
 import { Context, NodeParser } from "./NodeParser";
 import { BaseType } from "./Type/BaseType";
 import { DefinitionType } from "./Type/DefinitionType";
+import { NeverType } from "./Type/NeverType";
 
 export class TopRefNodeParser implements NodeParser {
     public constructor(protected childNodeParser: NodeParser, protected fullName: string, protected topRef: boolean) {}
@@ -11,11 +12,11 @@ export class TopRefNodeParser implements NodeParser {
         this.fullName = fullName;
     }
 
-    public createType(node: ts.Node, context: Context): BaseType | undefined {
+    public createType(node: ts.Node, context: Context): BaseType {
         const baseType = this.childNodeParser.createType(node, context);
 
         if (baseType === undefined) {
-            return undefined;
+            return new NeverType();
         }
 
         if (this.topRef && !(baseType instanceof DefinitionType)) {

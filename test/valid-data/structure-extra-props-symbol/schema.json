@@ -6,8 +6,7 @@
             "properties": {
                 "structure": {
                     "type": "object",
-                    "additionalProperties": {
-                    }
+                    "additionalProperties": {}
                 }
             },
             "required": [

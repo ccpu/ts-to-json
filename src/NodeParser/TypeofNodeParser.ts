@@ -9,6 +9,7 @@ import { getKey } from "../Utils/nodeKey";
 import { LiteralType } from "../Type/LiteralType";
 import { Config } from "../Config";
 import { isExcludedProp } from "../Utils/isExcludedProp";
+import { UnknownType } from "../Type/UnknownType";
 
 export class TypeofNodeParser implements SubNodeParser {
     public constructor(
@@ -26,13 +27,14 @@ export class TypeofNodeParser implements SubNodeParser {
         return symbol.valueDeclaration ? true : false;
     }
 
-    public createType(node: ts.TypeQueryNode, context: Context, reference?: ReferenceType): BaseType | undefined {
+    public createType(node: ts.TypeQueryNode, context: Context, reference?: ReferenceType): BaseType {
         let symbol = this.typeChecker.getSymbolAtLocation(node.exprName)!;
         if (symbol.flags & ts.SymbolFlags.Alias) {
             symbol = this.typeChecker.getAliasedSymbol(symbol);
         }
 
         const valueDec = symbol.valueDeclaration!;
+
         context.setSkipNode(valueDec);
         if (ts.isEnumDeclaration(valueDec)) {
             return this.createObjectFromEnum(valueDec, context, reference, node);
@@ -41,10 +43,11 @@ export class TypeofNodeParser implements SubNodeParser {
             ts.isPropertySignature(valueDec) ||
             ts.isPropertyDeclaration(valueDec)
         ) {
+            let initializer: ts.Expression | undefined;
             if (valueDec.type) {
                 return this.childNodeParser.createType(valueDec.type, context);
-            } else if (valueDec.initializer) {
-                return this.childNodeParser.createType(valueDec.initializer, context);
+            } else if ((initializer = (valueDec as ts.VariableDeclaration | ts.PropertyDeclaration)?.initializer)) {
+                return this.childNodeParser.createType(initializer, context);
             }
         } else if (ts.isClassDeclaration(valueDec)) {
             return this.childNodeParser.createType(valueDec, context);
@@ -52,6 +55,14 @@ export class TypeofNodeParser implements SubNodeParser {
             return this.childNodeParser.createType(valueDec, context, reference);
         } else if (ts.isPropertyAssignment(valueDec)) {
             return this.childNodeParser.createType(valueDec.initializer, context);
+        } else if (valueDec.kind === ts.SyntaxKind.FunctionDeclaration) {
+            // Silently ignoring Function as JSON Schema does not define them
+            // see https://github.com/vega/ts-json-schema-generator/issues/98
+            return new UnknownType(
+                // prettier-ignore
+                // eslint-disable-next-line max-len
+                `(${(<ts.FunctionDeclaration>valueDec).parameters.map((p) => p.getFullText()).join(",")}) -> ${(<ts.FunctionDeclaration>valueDec).type?.getFullText()}`
+            );
         }
 
         throw new LogicError(`Invalid type query "${valueDec.getFullText()}" (ts.SyntaxKind = ${valueDec.kind})`, node);
@@ -69,7 +80,7 @@ export class TypeofNodeParser implements SubNodeParser {
             reference.setName(id);
         }
 
-        let type: BaseType | null | undefined = null;
+        let type: BaseType | null = null;
         const properties = node.members
             .filter((member) => !isExcludedProp(member, new Context(parentNode), this.config))
             .map((member) => {
@@ -81,7 +92,7 @@ export class TypeofNodeParser implements SubNodeParser {
                 } else if (type instanceof LiteralType && typeof type.getValue() === "number") {
                     type = new LiteralType(+type.getValue() + 1);
                 } else {
-                    throw new LogicError(`Enum initializer missing for "${name}"`, node);
+                    throw new LogicError(`Enum initializer missing for "${name}"`);
                 }
                 return new ObjectProperty(name, type, true);
             });

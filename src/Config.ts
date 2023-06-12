@@ -15,6 +15,7 @@ export interface Config {
     encodeRefs?: boolean;
     extraTags?: string[];
     additionalProperties?: boolean;
+    discriminatorType?: "json-schema" | "open-api";
 
     /**
      *   Node that enabling this option can have side effects!
@@ -103,6 +104,6 @@ export const DEFAULT_CONFIG: Config = {
     encodeRefs: true,
     minify: false,
     extraTags: [],
-    showUnknownTypeInfo: true,
     additionalProperties: false,
+    discriminatorType: "json-schema",
 };

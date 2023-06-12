@@ -8,7 +8,6 @@ import { DefinitionType } from "./Type/DefinitionType";
 import { TypeFormatter } from "./TypeFormatter";
 import { StringMap } from "./Utils/StringMap";
 import { localSymbolAtNode, symbolAtNode } from "./Utils/symbolAtNode";
-import { notUndefined } from "./Utils/notUndefined";
 import { removeUnreachable } from "./Utils/removeUnreachable";
 import { Config } from "./Config";
 import { hasJsDocTag } from "./Utils/hasJsDocTag";
@@ -31,11 +30,10 @@ export class SchemaGenerator {
     }
 
     public createSchemaFromNodes(rootNodes: ts.Node[]): Schema {
-        const rootTypes = rootNodes
-            .map((rootNode) => {
-                return this.nodeParser.createType(rootNode, new Context());
-            })
-            .filter(notUndefined);
+        const rootTypes = rootNodes.map((rootNode) => {
+            return this.nodeParser.createType(rootNode, new Context());
+        });
+
         const rootTypeDefinition = rootTypes.length === 1 ? this.getRootTypeDefinition(rootTypes[0]) : undefined;
         const definitions: StringMap<Definition> = {};
         delete definitions["*"];
@@ -165,7 +163,7 @@ export class SchemaGenerator {
                 ) {
                     this.inspectNode(variableDeclarationNode.initializer, typeChecker, allTypes);
                 }
-                break;
+                return;
             }
             case ts.SyntaxKind.InterfaceDeclaration:
             case ts.SyntaxKind.ClassDeclaration:

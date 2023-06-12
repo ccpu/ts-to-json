@@ -20,7 +20,8 @@ export class CircularReferenceNodeParser implements SubNodeParser {
 
         return this.childNodeParser.supportsNode(node);
     }
-    public createType(node: ts.Node, context: Context): BaseType | undefined {
+
+    public createType(node: ts.Node, context: Context): BaseType {
         const key = extendKey(getKey(node, context), node, context, this.config);
         context.ignoreLimits = hasLimitOptions(this.config) && isRecursionToType(node, context, this.config.type);
 
@@ -36,7 +37,9 @@ export class CircularReferenceNodeParser implements SubNodeParser {
 
         this.circular.set(key, reference);
         const type = this.childNodeParser.createType(node, context, reference);
+
         context.ignoreLimits = false;
+
         if (type) {
             reference.setType(type);
         }

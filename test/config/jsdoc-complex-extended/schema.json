@@ -19,15 +19,25 @@
           "multipleOf": 3
         },
         "requiredValue": {
-          "type": ["number", "string"],
+          "type": [
+            "number",
+            "string"
+          ],
           "title": "Required value"
         },
         "nullableValue": {
-          "type": ["number", "string", "null"],
+          "type": [
+            "number",
+            "string",
+            "null"
+          ],
           "title": "Nullable value"
         },
         "optionalValue": {
-          "type": ["number", "string"],
+          "type": [
+            "number",
+            "string"
+          ],
           "title": "Optional value"
         },
         "privateString": {
@@ -55,7 +65,10 @@
           "title": "Non empty array"
         },
         "number": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "overriddenRefType": {
           "type": "number"

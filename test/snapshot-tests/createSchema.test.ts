@@ -4,6 +4,7 @@ import { getRelativeDirectories } from "../unit/get-directories";
 
 describe("createSchema", () => {
     const dirs = getRelativeDirectories(resolve(`${basePath}/limit-options`));
+
     dirs.forEach((dir) => {
         it(
             "excludeRootProps" + dir,

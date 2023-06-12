@@ -19,7 +19,7 @@ describe("createSchema", () => {
             expose: "none",
         })
     );
-    it("react-class", assertSchema("react-class", { expose: "all" }));
+    it("react-class", assertSchema("react-class", { expose: "all", handleUnknownTypes: true }));
     it(
         "ignoreMultipleDefinitions",
         assertSchema("ignoreMultipleDefinitions", { type: "Props", ignoreMultipleDefinitions: true })

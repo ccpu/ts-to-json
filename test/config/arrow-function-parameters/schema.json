@@ -16,7 +16,9 @@
           "type": "number"
         }
       },
-      "required": ["stringValue"],
+      "required": [
+        "stringValue"
+      ],
       "additionalProperties": false
     },
     "StringValue": {

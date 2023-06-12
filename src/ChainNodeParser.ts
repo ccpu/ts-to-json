@@ -25,17 +25,16 @@ export class ChainNodeParser implements SubNodeParser, MutableParser {
         return this.nodeParsers.some((nodeParser) => nodeParser.supportsNode(node));
     }
 
-    public createType(node: ts.Node, context: Context, reference?: ReferenceType): BaseType | undefined {
+    public createType(node: ts.Node, context: Context, reference?: ReferenceType): BaseType {
         let typeCache = this.typeCaches.get(node);
         if (typeCache == null) {
-            typeCache = new Map<string, BaseType | undefined>();
+            typeCache = new Map<string, BaseType>();
             this.typeCaches.set(node, typeCache);
         }
         const contextCacheKey = context.getCacheKey(this.config);
         let type = typeCache.get(contextCacheKey);
         if (!type) {
-            const parser = this.getNodeParser(node, context);
-            type = parser.createType(node, context, reference);
+            type = this.getNodeParser(node, context).createType(node, context, reference);
             if (!(type instanceof ReferenceType)) {
                 typeCache.set(contextCacheKey, type);
             }
