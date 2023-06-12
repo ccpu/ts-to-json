@@ -1,3 +1,4 @@
+import { Config } from "../Config";
 import { translate } from "../NodeParser/IntersectionNodeParser";
 import { AnyType } from "../Type/AnyType";
 import { ArrayType } from "../Type/ArrayType";
@@ -47,7 +48,7 @@ export function getTypeKeys(type: BaseType): LiteralType[] {
     return [];
 }
 
-export function getTypeByKey(type: BaseType, index: LiteralType | StringType): BaseType | undefined {
+export function getTypeByKey(type: BaseType, index: LiteralType | StringType, config: Config): BaseType | undefined {
     type = derefType(type);
 
     if (type instanceof IntersectionType || type instanceof UnionType) {
@@ -57,7 +58,7 @@ export function getTypeByKey(type: BaseType, index: LiteralType | StringType): B
         let firstType: BaseType | undefined;
 
         for (const subType of type.getTypes()) {
-            const subKeyType = getTypeByKey(subType, index);
+            const subKeyType = getTypeByKey(subType, index, config);
             if (subKeyType) {
                 subTypes.push(subKeyType);
                 if (!firstType) {
@@ -75,7 +76,7 @@ export function getTypeByKey(type: BaseType, index: LiteralType | StringType): B
             if (type instanceof UnionType) {
                 returnType = new UnionType(subTypes);
             } else {
-                returnType = translate(subTypes);
+                returnType = translate(subTypes, config);
             }
         }
 
@@ -126,7 +127,7 @@ export function getTypeByKey(type: BaseType, index: LiteralType | StringType): B
         }
 
         for (const subType of type.getBaseTypes()) {
-            const subKeyType = getTypeByKey(subType, index);
+            const subKeyType = getTypeByKey(subType, index, config);
             if (subKeyType) {
                 return subKeyType;
             }

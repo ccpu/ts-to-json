@@ -89,14 +89,14 @@ describe("createSchema", () => {
     );
     it(
         "with-promise-type",
-        assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexHandlingMode: "suppress" })
+        assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexErrorHandlingMode: "suppress" })
     );
 
     it("should throw error with invalid index", () => {
         expect(assertSchema("suppress-invalid-index-error", { type: "MyObject" })).toThrow();
 
         expect(
-            assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexHandlingMode: "throw" })
+            assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexErrorHandlingMode: "throw" })
         ).toThrow();
     });
 });

@@ -9,11 +9,16 @@ import { TypeFormatter } from "../TypeFormatter";
 import { derefType } from "../Utils/derefType";
 import { getTypeByKey } from "../Utils/typeKeys";
 import { uniqueArray } from "../Utils/uniqueArray";
+import { Config } from "../Config";
 
 type DiscriminatorType = "json-schema" | "open-api";
 
 export class UnionTypeFormatter implements SubTypeFormatter {
-    public constructor(protected childTypeFormatter: TypeFormatter, private discriminatorType?: DiscriminatorType) {}
+    public constructor(
+        protected childTypeFormatter: TypeFormatter,
+        private config: Config,
+        private discriminatorType?: DiscriminatorType
+    ) {}
 
     public supportsType(type: UnionType): boolean {
         return type instanceof UnionType;
@@ -31,7 +36,7 @@ export class UnionTypeFormatter implements SubTypeFormatter {
         const kindTypes = type
             .getTypes()
             .filter((item) => !(derefType(item) instanceof NeverType))
-            .map((item) => getTypeByKey(item, new LiteralType(discriminator)));
+            .map((item) => getTypeByKey(item, new LiteralType(discriminator), this.config));
 
         const undefinedIndex = kindTypes.findIndex((item) => item === undefined);
 

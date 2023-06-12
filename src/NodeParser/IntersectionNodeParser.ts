@@ -9,9 +9,15 @@ import { derefType } from "../Utils/derefType";
 import { uniqueTypeArray } from "../Utils/uniqueTypeArray";
 import { UndefinedType } from "../Type/UndefinedType";
 import { NeverType } from "../Type/NeverType";
+import { UnknownType } from "../Type/UnknownType";
+import { Config } from "../Config";
 
 export class IntersectionNodeParser implements SubNodeParser {
-    public constructor(protected typeChecker: ts.TypeChecker, protected childNodeParser: NodeParser) {}
+    public constructor(
+        protected typeChecker: ts.TypeChecker,
+        protected childNodeParser: NodeParser,
+        private config: Config
+    ) {}
 
     public supportsNode(node: ts.IntersectionTypeNode): boolean {
         return node.kind === ts.SyntaxKind.IntersectionType;
@@ -25,7 +31,7 @@ export class IntersectionNodeParser implements SubNodeParser {
             return new NeverType();
         }
 
-        return translate(types as BaseType[]);
+        return translate(types as BaseType[], this.config);
     }
 }
 
@@ -43,7 +49,7 @@ function derefAndFlattenUnions(type: BaseType): BaseType[] {
  * Translates the given intersection type into a union type if necessary so `A & (B | C)` becomes
  * `(A & B) | (A & C)`. If no translation is needed then the original intersection type is returned.
  */
-export function translate(types: BaseType[]): BaseType {
+export function translate(types: BaseType[], config: Config): BaseType {
     types = uniqueTypeArray(types as BaseType[]);
 
     if (types.length == 1) {
@@ -86,5 +92,12 @@ export function translate(types: BaseType[]): BaseType {
         return new UnionType(result);
     }
 
-    throw new Error("Could not translate intersection to union.");
+    if (config.intersectionErrorHandlingMode === "throw") {
+        throw new Error("Could not translate intersection to union.");
+    } else {
+        if (config.intersectionErrorHandlingMode === "warn") {
+            console.warn("Could not translate intersection to union.");
+        }
+        return new UnknownType();
+    }
 }

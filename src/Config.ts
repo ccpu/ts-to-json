@@ -93,7 +93,9 @@ export interface Config {
     */
     allowArbitraryDataTypes?: boolean;
 
-    invalidIndexHandlingMode?: "throw" | "warn" | "suppress";
+    invalidIndexErrorHandlingMode?: "throw" | "warn" | "suppress";
+
+    intersectionErrorHandlingMode?: "throw" | "warn" | "suppress";
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -108,5 +110,5 @@ export const DEFAULT_CONFIG: Config = {
     extraTags: [],
     additionalProperties: false,
     discriminatorType: "json-schema",
-    invalidIndexHandlingMode: "throw",
+    invalidIndexErrorHandlingMode: "throw",
 };

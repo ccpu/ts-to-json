@@ -76,7 +76,7 @@ export class IndexedAccessTypeNodeParser implements SubNodeParser {
                 );
             }
 
-            const propertyType = getTypeByKey(objectType, type);
+            const propertyType = getTypeByKey(objectType, type, this.config);
             if (!propertyType) {
                 if (type instanceof NumberType && objectType instanceof TupleType) {
                     return new UnionType(objectType.getTypes());
@@ -84,13 +84,13 @@ export class IndexedAccessTypeNodeParser implements SubNodeParser {
                     if (objectType instanceof ReferenceType) {
                         return objectType;
                     }
-                    if (this.config.invalidIndexHandlingMode === "throw") {
+                    if (this.config.invalidIndexErrorHandlingMode === "throw") {
                         throw new LogicError(
                             `Invalid index "${type.getValue()}" in type "${objectType.getId()}"`,
                             node
                         );
                     } else {
-                        if (this.config.invalidIndexHandlingMode === "warn") {
+                        if (this.config.invalidIndexErrorHandlingMode === "warn") {
                             console.warn(
                                 `Invalid index "${type.getValue()}" in type "${objectType.getId()}"` + getNodeInfo(node)
                             );

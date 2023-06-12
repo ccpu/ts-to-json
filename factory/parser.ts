@@ -165,7 +165,7 @@ export function createParser(program: ts.Program, config: Config, augmentor?: Pa
         .addNodeParser(new TypeOperatorNodeParser(chainNodeParser))
 
         .addNodeParser(new UnionNodeParser(typeChecker, chainNodeParser, mergedConfig))
-        .addNodeParser(new IntersectionNodeParser(typeChecker, chainNodeParser))
+        .addNodeParser(new IntersectionNodeParser(typeChecker, chainNodeParser, mergedConfig))
         .addNodeParser(new TupleNodeParser(typeChecker, chainNodeParser))
         .addNodeParser(new NamedTupleMemberNodeParser(chainNodeParser))
         .addNodeParser(new OptionalTypeNodeParser(chainNodeParser))
