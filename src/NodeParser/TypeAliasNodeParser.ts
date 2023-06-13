@@ -42,6 +42,12 @@ export class TypeAliasNodeParser implements SubNodeParser {
 
         const type = this.childNodeParser.createType(node.type, context);
 
+        // My Code  ------
+        if (type === undefined) {
+            return new NeverType();
+        }
+        // ---------------
+
         if (type instanceof NeverType) {
             return new NeverType();
         }

@@ -99,4 +99,6 @@ describe("createSchema", () => {
             assertSchema("suppress-invalid-index-error", { type: "MyObject", invalidIndexErrorHandlingMode: "throw" })
         ).toThrow();
     });
+
+    it("export-type-alias", assertSchema("export-type-alias", { type: undefined }));
 });
