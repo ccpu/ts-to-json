@@ -84,18 +84,21 @@ export class IndexedAccessTypeNodeParser implements SubNodeParser {
                     if (objectType instanceof ReferenceType) {
                         return objectType;
                     }
-                    if (this.config.invalidIndexErrorHandlingMode === "throw") {
-                        throw new LogicError(
-                            `Invalid index "${type.getValue()}" in type "${objectType.getId()}"`,
-                            node
-                        );
-                    } else {
+                    if (
+                        this.config.invalidIndexErrorHandlingMode === "warn" ||
+                        this.config.invalidIndexErrorHandlingMode === "suppress"
+                    ) {
                         if (this.config.invalidIndexErrorHandlingMode === "warn") {
                             console.warn(
                                 `Invalid index "${type.getValue()}" in type "${objectType.getId()}"` + getNodeInfo(node)
                             );
                         }
                         return new UnknownType();
+                    } else {
+                        throw new LogicError(
+                            `Invalid index "${type.getValue()}" in type "${objectType.getId()}"`,
+                            node
+                        );
                     }
                 } else {
                     throw new LogicError(`No additional properties in type "${objectType.getId()}"`, node);

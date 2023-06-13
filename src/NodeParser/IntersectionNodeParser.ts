@@ -92,12 +92,12 @@ export function translate(types: BaseType[], config: Config): BaseType {
         return new UnionType(result);
     }
 
-    if (config.intersectionErrorHandlingMode === "throw") {
-        throw new Error("Could not translate intersection to union.");
-    } else {
+    if (config.intersectionErrorHandlingMode === "suppress" || config.intersectionErrorHandlingMode === "warn") {
         if (config.intersectionErrorHandlingMode === "warn") {
             console.warn("Could not translate intersection to union.");
         }
         return new UnknownType();
+    } else {
+        throw new Error("Could not translate intersection to union.");
     }
 }

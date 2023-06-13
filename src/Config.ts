@@ -110,5 +110,4 @@ export const DEFAULT_CONFIG: Config = {
     extraTags: [],
     additionalProperties: false,
     discriminatorType: "json-schema",
-    invalidIndexErrorHandlingMode: "throw",
 };
